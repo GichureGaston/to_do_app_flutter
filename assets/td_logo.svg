@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2">
+    <rect
+       x="464.81737"
+       y="382.91283"
+       width="88.790687"
+       height="110.15394"
+       id="rect17260" />
+  </defs>
+  <g
+     id="layer1">
+    <ellipse
+       style="fill:#c87137;stroke-width:0.264583"
+       id="path31"
+       cx="121.86708"
+       cy="126.45442"
+       rx="34.6269"
+       ry="38.906445" />
+    <text
+       xml:space="preserve"
+       transform="scale(0.26458333)"
+       id="text17258"
+       style="fill:black;fill-opacity:1;line-height:1.25;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:40px;white-space:pre;shape-inside:url(#rect17260)" />
+    <ellipse
+       style="fill:#1a1a1a;stroke-width:0.264583"
+       id="ellipse36689"
+       cx="121.86708"
+       cy="126.45442"
+       rx="34.6269"
+       ry="38.906445" />
+    <ellipse
+       style="fill:#c87137;stroke-width:0.250178"
+       id="ellipse36689-9"
+       cx="120.75229"
+       cy="125.81709"
+       rx="32.012684"
+       ry="37.626122" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:42.7448px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.06862"
+       x="99.217918"
+       y="128.22865"
+       id="text38315"
+       transform="scale(1.0025408,0.99746564)"><tspan
+         id="tspan38313"
+         style="stroke-width:1.06862"
+         x="99.217918"
+         y="128.22865">T</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:36.6064px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.915158"
+       x="134.97449"
+       y="124.35994"
+       id="text47247"
+       transform="scale(0.83114949,1.203153)"><tspan
+         id="tspan47245"
+         style="stroke-width:0.915158"
+         x="134.97449"
+         y="124.35994">D</tspan></text>
+  </g>
+</svg>
