@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:equatable/equatable.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import '../data/to_do.dart';
+import '../network/network_client.dart';
 
 part 'to_do_event.dart';
 part 'to_do_state.dart';
@@ -17,23 +20,27 @@ class ToDoBloc extends HydratedBloc<ToDoEvent, ToDoState> {
   void _onStarted(
     ToDoStart event,
     Emitter<ToDoState> emit,
-  ) {
-    if (state.status == ToDoStatus.success) return;
-    emit(state.copyWith(todos: state.todos, status: ToDoStatus.success));
+  ) async {
+    emit(state.copyWith(status: ToDoStatus.loading));
+    final result = await _tasksHttpClient.getTodos();
+
+    emit(state.copyWith(todos: result, status: ToDoStatus.success));
   }
 
   void _onAddToDo(
     ToDoAdded event,
     Emitter<ToDoState> emit,
-  ) {
+  ) async {
     emit(state.copyWith(status: ToDoStatus.loading));
     try {
+      final result = await _tasksHttpClient.createTodo(event.todo);
       List<ToDo> temp = [];
       temp.addAll(state.todos ?? []);
-      temp.add(event.todo!);
+      temp.add(result!);
       emit(state.copyWith(
           todos: temp.reversed.toList(), status: ToDoStatus.success));
     } catch (e) {
+      log('TODOUPDATE ${e.toString()}');
       emit(state.copyWith(
         status: ToDoStatus.error,
       ));
@@ -43,15 +50,13 @@ class ToDoBloc extends HydratedBloc<ToDoEvent, ToDoState> {
   void _onRemoveToDo(
     ToDoRemoved event,
     Emitter<ToDoState> emit,
-  ) {
+  ) async {
     emit(state.copyWith(status: ToDoStatus.loading));
     try {
-      state.todos?.remove(event.todo);
-      emit(state.copyWith(
-        todos: state.todos,
-        status: ToDoStatus.success,
-      ));
+      await _tasksHttpClient.deleteTodo(event.todo);
+      add(ToDoStart());
     } catch (e) {
+      log('TODOUPDATE ${e.toString()}');
       emit(state.copyWith(
         status: ToDoStatus.error,
       ));
@@ -61,11 +66,9 @@ class ToDoBloc extends HydratedBloc<ToDoEvent, ToDoState> {
   void _onAlterToDo(
     ToDoAltered event,
     Emitter<ToDoState> emit,
-  ) {
+  ) async {
     emit(state.copyWith(status: ToDoStatus.loading));
     try {
-      state.todos?[event.index].isDone =
-          !(state.todos?[event.index].isDone ?? false);
       emit(state.copyWith(todos: state.todos, status: ToDoStatus.success));
     } catch (e) {
       emit(state.copyWith(status: ToDoStatus.error));
@@ -81,4 +84,6 @@ class ToDoBloc extends HydratedBloc<ToDoEvent, ToDoState> {
   Map<String, dynamic>? toJson(ToDoState state) {
     return state.toJson();
   }
+
+  final _tasksHttpClient = TasksHttpClient();
 }

@@ -1,48 +1,36 @@
 class ToDo {
-  final String title;
-  final String subtitle;
-  bool isDone;
+  int? id;
+  String? title;
+  String? description;
+  String? dueDate;
+  String? createdAt;
+  String? updatedAt;
 
-  ToDo({
-    this.title = "",
-    this.subtitle = "",
-    this.isDone = false,
-  });
+  ToDo(
+      {this.id,
+      this.title,
+      this.description,
+      this.dueDate,
+      this.createdAt,
+      this.updatedAt});
 
-  ToDo copyWith({
-    String? title,
-    String? subtitle,
-    bool? isDone,
-  }) {
-    return ToDo(
-      title: title ?? this.title,
-      subtitle: subtitle ?? this.subtitle,
-      isDone: isDone ?? this.isDone,
-    );
-  }
-
-  factory ToDo.fromJson(Map<String, dynamic> json) {
-    return ToDo(
-      title: json['title'],
-      subtitle: json['subtitle'],
-      isDone: json['isDone'],
-    );
+  ToDo.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    title = json['title'];
+    description = json['description'];
+    dueDate = json['due_date'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'subtitle': subtitle,
-      'isDone': isDone,
-    };
-  }
-
-  @override
-  String toString() {
-    return '''ToDo: {
-			title: $title\n
-			subtitle: $subtitle\n
-			isDone: $isDone\n
-		}''';
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['title'] = this.title;
+    data['description'] = this.description;
+    data['due_date'] = this.dueDate;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    return data;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todolist/data/to_do.dart';
+import 'package:todolist/detail_screen.dart';
 import 'package:todolist/todo_bloc/to_do_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,6 +25,11 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<ToDoBloc>().add(ToDoAltered(index));
   }
 
+  TextEditingController controller1 = TextEditingController();
+  TextEditingController controller2 = TextEditingController();
+  TextEditingController controller3 = TextEditingController();
+  DateTime? dueDate;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,8 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
           showDialog(
             context: context,
             builder: (context) {
-              TextEditingController controller1 = TextEditingController();
-              TextEditingController controller2 = TextEditingController();
               return AlertDialog(
                 title: const Text('Add a Task'),
                 content: Column(
@@ -44,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       controller: controller1,
                       cursorColor: Theme.of(context).colorScheme.secondary,
                       decoration: InputDecoration(
-                          hintText: 'Task Title....',
+                          labelText: 'Task Title....',
                           focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
                               borderSide: const BorderSide(
@@ -54,14 +58,43 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 11),
                     TextField(
                       controller: controller2,
+                      maxLines: 4,
                       cursorColor: Theme.of(context).colorScheme.secondary,
                       decoration: InputDecoration(
-                          hintText: 'Task Subtitle....',
+                          labelText: 'Task Description....',
                           focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
                               borderSide: const BorderSide(
                                 color: Colors.grey,
                               ))),
+                    ),
+                    const SizedBox(height: 11),
+                    InkWell(
+                      onTap: () {
+                        showDatePicker(
+                                context: context,
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime(2100))
+                            .then((date) {
+                          // date her
+                          print(date.toString());
+                          dueDate = date;
+                          controller3.text = date.toString();
+                          setState(() {});
+                        });
+                      },
+                      child: TextField(
+                        controller: controller3,
+                        enabled: false,
+                        cursorColor: Theme.of(context).colorScheme.secondary,
+                        decoration: InputDecoration(
+                            labelText: 'Select Due-Date....',
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: const BorderSide(
+                                  color: Colors.grey,
+                                ))),
+                      ),
                     ),
                   ],
                 ),
@@ -71,8 +104,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: TextButton(
                         onPressed: () {
                           toDoAdded(ToDo(
+                            //todo add date
                             title: controller1.text,
-                            subtitle: controller2.text,
+                            description: controller2.text,
                           ));
                           controller1.text = '';
                           controller2.text = '';
@@ -113,56 +147,69 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: BlocBuilder<ToDoBloc, ToDoState>(builder: (context, state) {
-          if (state.status == ToDoStatus.success) {
-            return ListView.builder(
-              itemCount: state.todos?.length,
-              itemBuilder: (context, int i) {
-                return Card(
-                  color: Theme.of(context).colorScheme.primary,
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Slidable(
-                    key: const ValueKey(0),
-                    startActionPane: ActionPane(
-                      motion: const ScrollMotion(),
-                      children: [
-                        SlidableAction(
-                          onPressed: (_) {
-                            todoRemove(state.todos?[i]);
-                          },
-                          backgroundColor: const Color(0xFFFF0000),
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete_rounded,
-                          label: 'Delete',
-                        ),
-                      ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          BlocProvider.of<ToDoBloc>(context).add(ToDoStart());
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: BlocBuilder<ToDoBloc, ToDoState>(builder: (context, state) {
+            if (state.status == ToDoStatus.success) {
+              return ListView.builder(
+                itemCount: state.todos?.length,
+                itemBuilder: (context, int i) {
+                  return Card(
+                    color: Theme.of(context).colorScheme.primary,
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: ListTile(
-                      title: Text(state.todos?[i].title ?? ""),
-                      subtitle: Text(state.todos?[i].subtitle ?? ''),
-                      trailing: Checkbox(
-                        value: state.todos?[i].isDone ?? false,
-                        activeColor: Theme.of(context).colorScheme.secondary,
-                        onChanged: (value) {
-                          alterTodo(i);
+                    child: Slidable(
+                      key: const ValueKey(0),
+                      startActionPane: ActionPane(
+                        motion: const ScrollMotion(),
+                        children: [
+                          SlidableAction(
+                            onPressed: (_) {
+                              todoRemove(state.todos?[i]);
+                            },
+                            backgroundColor: const Color(0xFFFF0000),
+                            foregroundColor: Colors.white,
+                            icon: Icons.delete_rounded,
+                            label: 'Delete',
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) => DetailScreen(
+                                  toDo: state.todos?[i],
+                                ),
+                              ));
                         },
+                        title: Text(state.todos?[i].title ?? ""),
+                        trailing: Checkbox(
+                          value: false,
+                          activeColor: Theme.of(context).colorScheme.secondary,
+                          onChanged: (value) {
+                            alterTodo(i);
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            );
-          } else if (state.status == ToDoStatus.initial) {
-            return const Center(child: CircularProgressIndicator());
-          } else {
-            return Container();
-          }
-        }),
+                  );
+                },
+              );
+            } else if (state.status == ToDoStatus.initial) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
+              return Container();
+            }
+          }),
+        ),
       ),
     );
   }
